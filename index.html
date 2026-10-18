@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Experiência WebAR - MindAR & A-Frame</title>
+  
+  <!-- Importando A-Frame e MindAR -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    /* Estilo opcional para centralizar uma mensagem de carregamento inicial */
+    #loading-message {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-family: sans-serif;
+      z-index: 999;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loading-message">Aponte a câmera para as imagens de referência...</div>
+
+  <!-- Cena A-Frame integrada com MindAR -->
+  <a-scene 
+    mindar-image="imageTargetSrc: targets.mind; maxTrack: 2;" 
+    color-space="sRGB" 
+    renderer="colorManagement: true, physicallyCorrectLights" 
+    vr-mode-ui="enabled: false" 
+    device-orientation-permission-ui="enabled: false">
+
+    <a-assets>
+      <!-- Pré-carregando os modelos 3D (.glb) -->
+      <a-asset-item id="model-jazida" src="jazida.glb"></a-asset-item>
+      <a-asset-item id="model-producao" src="producao.glb"></a-asset-item>
+      <a-asset-item id="model-feirapessoas" src="feirapessoas.glb"></a-asset-item>
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <!-- ALVO 0: imagem1.jpeg -> jazida.glb -->
+    <a-entity mindar-image-target="targetIndex: 0">
+      <a-gltf-model 
+        src="#model-jazida" 
+        position="0 0 0" 
+        scale="0.01 0.01 0.01" 
+        rotation="0 0 0">
+      </a-gltf-model>
+    </a-entity>
+
+    <!-- ALVO 1: imagem2.jpeg -> producao.glb -->
+    <a-entity mindar-image-target="targetIndex: 1">
+      <a-gltf-model 
+        src="#model-producao" 
+        position="0 0 0" 
+        scale="0.01 0.01 0.01" 
+        rotation="0 0 0">
+      </a-gltf-model>
+    </a-entity>
+
+    <!-- ALVO 2: imagem3.jpeg -> Sem objeto final (Exibe um texto temporário) -->
+    <a-entity mindar-image-target="targetIndex: 2">
+      <a-text 
+        value="Conteudo em breve..." 
+        align="center" 
+        position="0 0 0" 
+        scale="1.5 1.5 1.5" 
+        color="#FFD700">
+      </a-text>
+    </a-entity>
+
+    <!-- ALVO 3: imagem4.jpeg -> feirapessoas.glb -->
+    <a-entity mindar-image-target="targetIndex: 3">
+      <a-gltf-model 
+        src="#model-feirapessoas" 
+        position="0 0 0" 
+        scale="0.01 0.01 0.01" 
+        rotation="0 0 0">
+      </a-gltf-model>
+    </a-entity>
+
+  </a-scene>
+
+</body>
+</html>
