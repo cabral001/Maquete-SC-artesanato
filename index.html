@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Maquete Interativa - WebAR</title>
 
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
@@ -13,31 +13,25 @@
       margin: 0;
       padding: 0;
       overflow: hidden;
-      width: 100%;
-      height: 100%;
       background: #000;
     }
 
-    /* Contêiner da cena ocupa a tela inteira */
-    a-scene {
+    /* Altura real controlada via JS (var --app-height), evitando o vão
+       causado pela barra de endereço do navegador no celular */
+    #app-container {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
-      height: 100vh;
+      height: var(--app-height, 100vh);
     }
 
-    /* Só o vídeo da câmera recebe object-fit: cover,
-       para preencher a tela sem distorcer e sem sobrar fundo branco.
-       O canvas (desenho 3D) fica por conta do próprio A-Frame/MindAR. */
-    a-scene video {
-      position: absolute !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      object-fit: cover !important;
+    a-scene {
+      width: 100%;
+      height: 100%;
     }
+
+    /* Nenhum CSS customizado em video/canvas: o MindAR já cuida disso sozinho */
 
     #status-message {
       position: fixed;
@@ -85,46 +79,62 @@
     <p>Ponto de origem onde o barro é extraído da natureza nas margens de rios e encostas.</p>
   </div>
 
-  <a-scene
-    mindar-image="imageTargetSrc: targets.mind; maxTrack: 4;"
-    embedded
-    renderer="colorManagement: true; physicallyCorrectLights: true; antialias: true;"
-    vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false">
+  <div id="app-container">
+    <a-scene
+      mindar-image="imageTargetSrc: targets.mind; maxTrack: 4;"
+      embedded
+      renderer="colorManagement: true; physicallyCorrectLights: true; antialias: true;"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false">
 
-    <a-assets>
-      <a-asset-item id="model-jazida" src="jazida.glb"></a-asset-item>
-      <a-asset-item id="model-producao" src="producao.glb"></a-asset-item>
-      <a-asset-item id="model-feirapessoas" src="feirapessoas.glb"></a-asset-item>
-    </a-assets>
+      <a-assets>
+        <a-asset-item id="model-jazida" src="jazida.glb"></a-asset-item>
+        <a-asset-item id="model-producao" src="producao.glb"></a-asset-item>
+        <a-asset-item id="model-feirapessoas" src="feirapessoas.glb"></a-asset-item>
+      </a-assets>
 
-    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <a-entity id="target-0" mindar-image-target="targetIndex: 0">
-      <a-gltf-model src="#model-jazida" position="0 0 0" scale="10 10 10" rotation="0 0 0"></a-gltf-model>
-    </a-entity>
+      <a-entity id="target-0" mindar-image-target="targetIndex: 0">
+        <a-gltf-model src="#model-jazida" position="0 0 0" scale="10 10 10" rotation="0 0 0"></a-gltf-model>
+      </a-entity>
 
-    <a-entity id="target-1" mindar-image-target="targetIndex: 1">
-      <a-gltf-model src="#model-producao" position="0 0 0" scale="10 10 10" rotation="0 0 0"></a-gltf-model>
-    </a-entity>
+      <a-entity id="target-1" mindar-image-target="targetIndex: 1">
+        <a-gltf-model src="#model-producao" position="0 0 0" scale="1 1 1" rotation="0 0 0"></a-gltf-model>
+      </a-entity>
 
-    <a-entity id="target-2" mindar-image-target="targetIndex: 2">
-      <a-text value="Conteudo em breve..." align="center" position="0 0 0" scale="10 10 10" color="#FFD700"></a-text>
-    </a-entity>
+      <a-entity id="target-2" mindar-image-target="targetIndex: 2">
+        <a-text value="Conteudo em breve..." align="center" position="0 0 0" scale="1 1 1" color="#FFD700"></a-text>
+      </a-entity>
 
-    <a-entity id="target-3" mindar-image-target="targetIndex: 3">
-      <a-gltf-model src="#model-feirapessoas" position="0 0 0" scale="10 10 10" rotation="0 0 0"></a-gltf-model>
-    </a-entity>
+      <a-entity id="target-3" mindar-image-target="targetIndex: 3">
+        <a-gltf-model src="#model-feirapessoas" position="0 0 0" scale="1 1 1" rotation="0 0 0"></a-gltf-model>
+      </a-entity>
 
-  </a-scene>
+    </a-scene>
+  </div>
 
   <script>
+    // Corrige a altura real da viewport no celular (problema do 100vh com a barra de endereço)
+    function setAppHeight() {
+      document.documentElement.style.setProperty('--app-height', window.innerHeight + 'px');
+    }
+    window.addEventListener('resize', setAppHeight);
+    window.addEventListener('orientationchange', setAppHeight);
+    setAppHeight();
+
     const statusEl = document.getElementById('status-message');
 
     const target0 = document.getElementById('target-0');
     const balloon0 = document.getElementById('balloon-0');
     target0.addEventListener('targetFound', () => { balloon0.style.display = 'block'; });
     target0.addEventListener('targetLost', () => { balloon0.style.display = 'none'; });
+
+    // Log de carregamento dos modelos, para diagnosticar se os .glb estão sendo encontrados
+    document.querySelectorAll('a-asset-item').forEach(item => {
+      item.addEventListener('loaded', () => console.log('Carregado:', item.id));
+      item.addEventListener('error', (e) => console.error('Erro ao carregar:', item.id, e));
+    });
 
     async function checkCamera() {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
