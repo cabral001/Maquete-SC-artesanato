@@ -42,18 +42,18 @@
       pointer-events: none;
     }
 
-    /* ESTILO DO BALÃO HTML FLUTUANTE */
+    /* ESTILO DO BALÃO HTML FLUTUANTE (Opção 2) */
     .ar-balloon {
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.92);
       color: #333;
       padding: 12px 16px;
       border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
       font-family: sans-serif;
       width: 220px;
       text-align: left;
       border-left: 5px solid #2196F3;
-      transform: translate(-50%, -100%); /* Centraliza acima do ponto de origem */
+      pointer-events: auto; /* Permite interagir se necessário */
     }
     .ar-balloon h3 {
       margin: 0 0 6px 0;
@@ -72,7 +72,7 @@
 
   <div id="loading-message">Aponte a câmara para as imagens de referência...</div>
 
-  <!-- Cena A-Frame com suporte a HTML UI do MindAR -->
+  <!-- Cena A-Frame com suporte a HTML UI integrado do MindAR -->
   <a-scene 
     mindar-image="imageTargetSrc: targets.mind; maxTrack: 4;" 
     embedded
@@ -89,7 +89,7 @@
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- ALVO 0: imagem1.jpeg -> jazida.glb (Com o atributo mindar-image-target associado ao HTML via slot) -->
+    <!-- ALVO 0: imagem1.jpeg -> jazida.glb + BALÃO HTML -->
     <a-entity mindar-image-target="targetIndex: 0">
       <a-gltf-model 
         src="#model-jazida" 
@@ -97,6 +97,14 @@
         scale="10 10 10" 
         rotation="0 0 0">
       </a-gltf-model>
+      
+      <!-- O MindAR HTML usa 'rico' posicionamento via WebComponents/Slots -->
+      <a-entity position="0 0.6 0">
+        <div slot="portal" class="ar-balloon">
+          <h3>Jazida e Extração de Argila</h3>
+          <p>Ponto de origem onde o barro é extraído da natureza nas margens de rios e encostas.</p>
+        </div>
+      </a-entity>
     </a-entity>
 
     <!-- ALVO 1: imagem2.jpeg -> producao.glb -->
@@ -131,12 +139,6 @@
     </a-entity>
 
   </a-scene>
-
-  <!-- BALÕES HTML DO MINDAR (Devem ficar fora da a-scene, vinculados por targetIndex) -->
-  <div slot="targetIndex: 0" class="ar-balloon">
-    <h3>Jazida e Extração de Argila</h3>
-    <p>Ponto de origem onde o barro é extraído da natureza nas margens de rios e encostas.</p>
-  </div>
 
 </body>
 </html>
