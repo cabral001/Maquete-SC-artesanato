@@ -9,45 +9,23 @@
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
-  html, body {
-    margin: 0;
-    overflow: hidden;
-    height: 100%;
-    background: #000;
-  }
+    body { margin: 0; overflow: hidden; }
 
-  /* A própria cena ocupa a tela inteira */
-  a-scene {
-    position: fixed !important;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-  }
-
-  /* Só o vídeo da câmera recebe object-fit: cover.
-     O canvas do A-Frame é deixado para o próprio framework dimensionar. */
-  a-scene video {
-    object-fit: cover !important;
-    width: 100% !important;
-    height: 100% !important;
-  }
-
-  #status-message {
-    position: fixed;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.75);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-family: sans-serif;
-    font-size: 14px;
-    z-index: 999;
-    max-width: 85%;
-    text-align: center;
-  }
+    #status-message {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.75);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-family: sans-serif;
+      font-size: 14px;
+      z-index: 999;
+      max-width: 85%;
+      text-align: center;
+    }
 
     .ar-balloon {
       display: none;
@@ -115,18 +93,18 @@
   <script>
     const statusEl = document.getElementById('status-message');
 
+    // Liga o balão HTML ao evento real do MindAR (o "slot" antigo não existia de fato)
     const target0 = document.getElementById('target-0');
     const balloon0 = document.getElementById('balloon-0');
     target0.addEventListener('targetFound', () => { balloon0.style.display = 'block'; });
     target0.addEventListener('targetLost', () => { balloon0.style.display = 'none'; });
 
+    // Verifica a câmera ANTES do MindAR tentar, com diagnóstico claro
     async function checkCamera() {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         statusEl.textContent = 'Este navegador não suporta câmera (ou a página não está em HTTPS).';
         return;
       }
-
-      const videoConstraints720p = { width: { ideal: 1280 }, height: { ideal: 720 } };
 
       try {
         const devices = await navigator.mediaDevices.enumerateDevices();
@@ -137,16 +115,15 @@
           return;
         }
 
+        // Tenta pedir a câmera traseira; se falhar, tenta qualquer câmera disponível
         try {
           const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: { ideal: 'environment' }, ...videoConstraints720p }
+            video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
           });
           stream.getTracks().forEach(t => t.stop());
           statusEl.textContent = 'Aponte a câmera para as imagens de referência...';
         } catch (e1) {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: videoConstraints720p
-          });
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
           stream.getTracks().forEach(t => t.stop());
           statusEl.textContent = 'Aponte a câmera para as imagens de referência...';
         }
