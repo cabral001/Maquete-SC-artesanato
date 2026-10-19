@@ -42,18 +42,18 @@
       pointer-events: none;
     }
 
-    /* ESTILO DO BALÃO HTML FLUTUANTE (Opção 2) */
+    /* ESTILO DO BALÃO HTML FLUTUANTE */
     .ar-balloon {
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.95);
       color: #333;
       padding: 12px 16px;
       border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
       font-family: sans-serif;
       width: 220px;
       text-align: left;
       border-left: 5px solid #2196F3;
-      pointer-events: auto; /* Permite interagir se necessário */
+      transform: translate(-50%, -100%); /* Centraliza perfeitamente acima do alvo */
     }
     .ar-balloon h3 {
       margin: 0 0 6px 0;
@@ -72,7 +72,7 @@
 
   <div id="loading-message">Aponte a câmara para as imagens de referência...</div>
 
-  <!-- Cena A-Frame com suporte a HTML UI integrado do MindAR -->
+  <!-- Cena A-Frame limpa e correta -->
   <a-scene 
     mindar-image="imageTargetSrc: targets.mind; maxTrack: 4;" 
     embedded
@@ -89,56 +89,33 @@
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- ALVO 0: imagem1.jpeg -> jazida.glb + BALÃO HTML -->
+    <!-- ALVO 0: Jazida -->
     <a-entity mindar-image-target="targetIndex: 0">
-      <a-gltf-model 
-        src="#model-jazida" 
-        position="0 0 0" 
-        scale="10 10 10" 
-        rotation="0 0 0">
-      </a-gltf-model>
-      
-      <!-- O MindAR HTML usa 'rico' posicionamento via WebComponents/Slots -->
-      <a-entity position="0 0.6 0">
-        <div slot="portal" class="ar-balloon">
-          <h3>Jazida e Extração de Argila</h3>
-          <p>Ponto de origem onde o barro é extraído da natureza nas margens de rios e encostas.</p>
-        </div>
-      </a-entity>
+      <a-gltf-model src="#model-jazida" position="0 0 0" scale="10 10 10" rotation="0 0 0"></a-gltf-model>
     </a-entity>
 
-    <!-- ALVO 1: imagem2.jpeg -> producao.glb -->
+    <!-- ALVO 1: Produção -->
     <a-entity mindar-image-target="targetIndex: 1">
-      <a-gltf-model 
-        src="#model-producao" 
-        position="0 0 0" 
-        scale="10 10 10" 
-        rotation="0 0 0">
-      </a-gltf-model>
+      <a-gltf-model src="#model-producao" position="0 0 0" scale="10 10 10" rotation="0 0 0"></a-gltf-model>
     </a-entity>
 
-    <!-- ALVO 2: imagem3.jpeg -> Texto provisório -->
+    <!-- ALVO 2: Texto provisório -->
     <a-entity mindar-image-target="targetIndex: 2">
-      <a-text 
-        value="Conteudo em breve..." 
-        align="center" 
-        position="0 0 0" 
-        scale="10 10 10" 
-        color="#FFD700">
-      </a-text>
+      <a-text value="Conteudo em breve..." align="center" position="0 0 0" scale="10 10 10" color="#FFD700"></a-text>
     </a-entity>
 
-    <!-- ALVO 3: imagem4.jpeg -> feirapessoas.glb -->
+    <!-- ALVO 3: Feira Pessoas -->
     <a-entity mindar-image-target="targetIndex: 3">
-      <a-gltf-model 
-        src="#model-feirapessoas" 
-        position="0 0 0" 
-        scale="10 10 10" 
-        rotation="0 0 0">
-      </a-gltf-model>
+      <a-gltf-model src="#model-feirapessoas" position="0 0 0" scale="10 10 10" rotation="0 0 0"></a-gltf-model>
     </a-entity>
 
   </a-scene>
+
+  <!-- BALÃO HTML DO MINDAR (Posicionado corretamente FORA da a-scene) -->
+  <div slot="targetIndex: 0" class="ar-balloon">
+    <h3>Jazida e Extração de Argila</h3>
+    <p>Ponto de origem onde o barro é extraído da natureza nas margens de rios e encostas.</p>
+  </div>
 
 </body>
 </html>
