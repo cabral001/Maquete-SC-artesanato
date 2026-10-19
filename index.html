@@ -29,57 +29,6 @@
       overflow: hidden;
     }
 
-    /* BOTÃO PARA ALTERNAR ENTRE OS MODOS */
-    #mode-toggle-btn {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1000;
-      background: #ff9800;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 12px;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-
-    /* MENU DE BOTÕES (Visível apenas no Modo Teste) */
-    #switcher-container {
-      position: fixed;
-      bottom: 25px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1000;
-      display: none;
-      gap: 8px;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 10px;
-      border-radius: 16px;
-      backdrop-filter: blur(5px);
-    }
-    #switcher-container.visible {
-      display: flex;
-    }
-    .switch-btn {
-      background: #ffffff;
-      border: none;
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-weight: bold;
-      font-size: 13px;
-      cursor: pointer;
-      color: #333;
-      transition: all 0.2s;
-    }
-    .switch-btn.active {
-      background: #2196F3;
-      color: white;
-    }
-
     /* ESTILO DO BALÃO HTML FLUTUANTE */
     .ar-balloon {
       background: rgba(255, 255, 255, 0.95);
@@ -105,93 +54,12 @@
       color: #555;
     }
   </style>
-
-  <script>
-    let modoTeste = false;
-
-    function alternarModo() {
-      modoTeste = !modoTeste;
-      const btnModo = document.getElementById('mode-toggle-btn');
-      const switcher = document.getElementById('switcher-container');
-
-      if (modoTeste) {
-        btnModo.innerText = "Modo Atual: TESTE (1 Imagem + Botões)";
-        btnModo.style.background = "#e91e63";
-        switcher.classList.add('visible');
-        
-        // No modo teste, força todos os modelos/balões para o alvo 0 e exibe apenas o primeiro
-        mudarModeloTeste(0);
-      } else {
-        btnModo.innerText = "Modo Atual: NORMAL (4 Imagens)";
-        btnModo.style.background = "#ff9800";
-        switcher.classList.remove('visible');
-
-        // Restaura os slots originais para funcionarem em alvos separados
-        for (let i = 0; i < 4; i++) {
-          const modelo = document.getElementById('model-' + i);
-          const balao = document.getElementById('balloon-' + i);
-          if (modelo) {
-            modelo.setAttribute('visible', true);
-            // Move de volta para a sua entidade de alvo respetiva
-            document.querySelector('#target-' + i).appendChild(modelo);
-          }
-          if (balao) {
-            balao.setAttribute('slot', 'targetIndex: ' + i);
-            balao.style.display = 'block';
-          }
-        }
-      }
-    }
-
-    function mudarModeloTeste(index) {
-      if (!modoTeste) return;
-
-      const containerAlvo0 = document.querySelector('#target-0');
-
-      for (let i = 0; i < 4; i++) {
-        const modelo = document.getElementById('model-' + i);
-        const balao = document.getElementById('balloon-' + i);
-        const btn = document.getElementById('btn-' + i);
-
-        if (modelo) {
-          // No modo teste, todos os modelos ficam sob o Alvo 0, mas só um fica visível
-          containerAlvo0.appendChild(modelo);
-          modelo.setAttribute('visible', i === index);
-        }
-
-        if (balao) {
-          // No modo teste, todos os balões usam o slot do Alvo 0, mas só o ativo aparece
-          balao.setAttribute('slot', 'targetIndex: 0');
-          balao.style.display = (i === index) ? 'block' : 'none';
-        }
-
-        if (btn) {
-          if (i === index) {
-            btn.classList.add('active');
-          } else {
-            btn.classList.remove('active');
-          }
-        }
-      }
-    }
-  </script>
 </head>
 <body>
 
-  <!-- Botão para alternar o modo de funcionamento -->
-  <button id="mode-toggle-btn" onclick="alternarModo()">Modo Atual: NORMAL (4 Imagens)</button>
-
-  <!-- Menu flutuante do Modo Teste -->
-  <div id="switcher-container">
-    <button id="btn-0" class="switch-btn active" onclick="mudarModeloTeste(0)">1. Jazida</button>
-    <button id="btn-1" class="switch-btn" onclick="mudarModeloTeste(1)">2. Produção</button>
-    <button id="btn-2" class="switch-btn" onclick="mudarModeloTeste(2)">3. Outro</button>
-    <button id="btn-3" class="switch-btn" onclick="mudarModeloTeste(3)">4. Feira</button>
-  </div>
-
-  <!-- Cena A-Frame apontando para o seu alvo.mind -->
+  <!-- Cena A-Frame com suporte a 4 alvos -->
   <a-scene 
-    mindar-image="imageTargetSrc: alvo.mind; maxTrack: 4;" 
+    mindar-image="imageTargetSrc: targets.mind; maxTrack: 4;" 
     embedded
     renderer="colorManagement: true; physicallyCorrectLights: true; antialias: true; highRefreshRate: true; precision: high;" 
     vr-mode-ui="enabled: false" 
@@ -206,44 +74,44 @@
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
     <!-- ALVO 0 -->
-    <a-entity id="target-0" mindar-image-target="targetIndex: 0">
-      <a-gltf-model id="model-0" src="#asset-jazida" position="0 0 0" scale="10 10 10" rotation="0 0 0"></a-gltf-model>
+    <a-entity mindar-image-target="targetIndex: 0">
+      <a-gltf-model src="#asset-jazida" position="0 0 0" scale="10 10 10" rotation="0 0 0"></a-gltf-model>
     </a-entity>
 
     <!-- ALVO 1 -->
-    <a-entity id="target-1" mindar-image-target="targetIndex: 1">
-      <a-gltf-model id="model-1" src="#asset-producao" position="0 0 0" scale="10 10 10" rotation="0 0 0"></a-gltf-model>
+    <a-entity mindar-image-target="targetIndex: 1">
+      <a-gltf-model src="#asset-producao" position="0 0 0" scale="10 10 10" rotation="0 0 0"></a-gltf-model>
     </a-entity>
 
     <!-- ALVO 2 -->
-    <a-entity id="target-2" mindar-image-target="targetIndex: 2">
-      <a-text id="model-2" value="Conteudo em breve..." align="center" position="0 0 0" scale="10 10 10" color="#FFD700"></a-text>
+    <a-entity mindar-image-target="targetIndex: 2">
+      <a-text value="Conteudo em breve..." align="center" position="0 0 0" scale="10 10 10" color="#FFD700"></a-text>
     </a-entity>
 
     <!-- ALVO 3 -->
-    <a-entity id="target-3" mindar-image-target="targetIndex: 3">
-      <a-gltf-model id="model-3" src="#asset-feirapessoas" position="0 0 0" scale="10 10 10" rotation="0 0 0"></a-gltf-model>
+    <a-entity mindar-image-target="targetIndex: 3">
+      <a-gltf-model src="#asset-feirapessoas" position="0 0 0" scale="10 10 10" rotation="0 0 0"></a-gltf-model>
     </a-entity>
 
   </a-scene>
 
   <!-- BALÕES HTML VINCULADOS AOS 4 ALVOS -->
-  <div id="balloon-0" slot="targetIndex: 0" class="ar-balloon">
+  <div slot="targetIndex: 0" class="ar-balloon">
     <h3>Jazida e Extração de Argila</h3>
     <p>Ponto de origem onde o barro é extraído da natureza nas margens de rios e encostas.</p>
   </div>
 
-  <div id="balloon-1" slot="targetIndex: 1" class="ar-balloon">
+  <div slot="targetIndex: 1" class="ar-balloon">
     <h3>Processo de Produção</h3>
     <p>Transformação e moldagem da argila nas etapas industriais ou artesanais.</p>
   </div>
 
-  <div id="balloon-2" slot="targetIndex: 2" class="ar-balloon">
+  <div slot="targetIndex: 2" class="ar-balloon">
     <h3>Próxima Etapa</h3>
     <p>Conteúdo em desenvolvimento para esta seção da maquete.</p>
   </div>
 
-  <div id="balloon-3" slot="targetIndex: 3" class="ar-balloon">
+  <div slot="targetIndex: 3" class="ar-balloon">
     <h3>Feira e Comercialização</h3>
     <p>Exposição e distribuição final dos produtos cerâmicos para o público.</p>
   </div>
