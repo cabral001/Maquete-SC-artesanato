@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Maquete Interativa - WebAR Completo</title>
+  <title>Maquete Interativa - WebAR</title>
   
   <!-- SCRIPT DE INTERCEÇÃO: Força a câmara a rodar em HD (720p) -->
   <script>
@@ -28,24 +28,11 @@
       margin: 0;
       overflow: hidden;
     }
-    #loading-message {
-      position: fixed;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.7);
-      color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-family: sans-serif;
-      z-index: 999;
-      pointer-events: none;
-    }
 
-    /* BOTÃO PARA ALTERNAR ENTRE OS MODOS (Normal vs Teste) */
+    /* BOTÃO PARA ALTERNAR ENTRE OS MODOS */
     #mode-toggle-btn {
       position: fixed;
-      top: 60px;
+      top: 20px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 1000;
@@ -67,7 +54,7 @@
       left: 50%;
       transform: translateX(-50%);
       z-index: 1000;
-      display: none; /* Oculto por padrão no modo normal */
+      display: none;
       gap: 8px;
       background: rgba(0, 0, 0, 0.6);
       padding: 10px;
@@ -126,23 +113,32 @@
       modoTeste = !modoTeste;
       const btnModo = document.getElementById('mode-toggle-btn');
       const switcher = document.getElementById('switcher-container');
-      const loadingMsg = document.getElementById('loading-message');
 
       if (modoTeste) {
         btnModo.innerText = "Modo Atual: TESTE (1 Imagem + Botões)";
         btnModo.style.background = "#e91e63";
         switcher.classList.add('visible');
-        loadingMsg.innerText = "Modo Teste: Aponte para a imagem e use os botões abaixo.";
+        
+        // No modo teste, força todos os modelos/balões para o alvo 0 e exibe apenas o primeiro
         mudarModeloTeste(0);
       } else {
         btnModo.innerText = "Modo Atual: NORMAL (4 Imagens)";
         btnModo.style.background = "#ff9800";
         switcher.classList.remove('visible');
-        loadingMsg.innerText = "Modo Normal: Aponte para qualquer uma das 4 imagens de referência.";
 
+        // Restaura os slots originais para funcionarem em alvos separados
         for (let i = 0; i < 4; i++) {
-          const m = document.getElementById('model-' + i);
-          if (m) m.setAttribute('visible', true);
+          const modelo = document.getElementById('model-' + i);
+          const balao = document.getElementById('balloon-' + i);
+          if (modelo) {
+            modelo.setAttribute('visible', true);
+            // Move de volta para a sua entidade de alvo respetiva
+            document.querySelector('#target-' + i).appendChild(modelo);
+          }
+          if (balao) {
+            balao.setAttribute('slot', 'targetIndex: ' + i);
+            balao.style.display = 'block';
+          }
         }
       }
     }
@@ -150,19 +146,25 @@
     function mudarModeloTeste(index) {
       if (!modoTeste) return;
 
+      const containerAlvo0 = document.querySelector('#target-0');
+
       for (let i = 0; i < 4; i++) {
         const modelo = document.getElementById('model-' + i);
         const balao = document.getElementById('balloon-' + i);
         const btn = document.getElementById('btn-' + i);
 
-        if (modelo) modelo.setAttribute('visible', i === index);
-        if (balao) {
-          if (i === index) {
-            balao.style.display = 'block';
-          } else {
-            balao.style.display = 'none';
-          }
+        if (modelo) {
+          // No modo teste, todos os modelos ficam sob o Alvo 0, mas só um fica visível
+          containerAlvo0.appendChild(modelo);
+          modelo.setAttribute('visible', i === index);
         }
+
+        if (balao) {
+          // No modo teste, todos os balões usam o slot do Alvo 0, mas só o ativo aparece
+          balao.setAttribute('slot', 'targetIndex: 0');
+          balao.style.display = (i === index) ? 'block' : 'none';
+        }
+
         if (btn) {
           if (i === index) {
             btn.classList.add('active');
@@ -176,8 +178,6 @@
 </head>
 <body>
 
-  <div id="loading-message">Aponte a câmara para as imagens de referência...</div>
-
   <!-- Botão para alternar o modo de funcionamento -->
   <button id="mode-toggle-btn" onclick="alternarModo()">Modo Atual: NORMAL (4 Imagens)</button>
 
@@ -189,7 +189,7 @@
     <button id="btn-3" class="switch-btn" onclick="mudarModeloTeste(3)">4. Feira</button>
   </div>
 
-  <!-- Cena A-Frame apontando para o ficheiro correto: alvo.mind -->
+  <!-- Cena A-Frame apontando para o seu alvo.mind -->
   <a-scene 
     mindar-image="imageTargetSrc: alvo.mind; maxTrack: 4;" 
     embedded
@@ -206,22 +206,22 @@
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
     <!-- ALVO 0 -->
-    <a-entity mindar-image-target="targetIndex: 0">
+    <a-entity id="target-0" mindar-image-target="targetIndex: 0">
       <a-gltf-model id="model-0" src="#asset-jazida" position="0 0 0" scale="10 10 10" rotation="0 0 0"></a-gltf-model>
     </a-entity>
 
     <!-- ALVO 1 -->
-    <a-entity mindar-image-target="targetIndex: 1">
+    <a-entity id="target-1" mindar-image-target="targetIndex: 1">
       <a-gltf-model id="model-1" src="#asset-producao" position="0 0 0" scale="10 10 10" rotation="0 0 0"></a-gltf-model>
     </a-entity>
 
     <!-- ALVO 2 -->
-    <a-entity mindar-image-target="targetIndex: 2">
+    <a-entity id="target-2" mindar-image-target="targetIndex: 2">
       <a-text id="model-2" value="Conteudo em breve..." align="center" position="0 0 0" scale="10 10 10" color="#FFD700"></a-text>
     </a-entity>
 
     <!-- ALVO 3 -->
-    <a-entity mindar-image-target="targetIndex: 3">
+    <a-entity id="target-3" mindar-image-target="targetIndex: 3">
       <a-gltf-model id="model-3" src="#asset-feirapessoas" position="0 0 0" scale="10 10 10" rotation="0 0 0"></a-gltf-model>
     </a-entity>
 
