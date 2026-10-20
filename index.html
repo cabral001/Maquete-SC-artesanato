@@ -61,7 +61,9 @@
       border-radius: 12px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
       font-family: sans-serif;
-      width: 220px;
+      width: 260px;
+      max-height: 60vh;
+      overflow-y: auto;
       text-align: left;
       border-left: 5px solid #2196F3;
       z-index: 998;
@@ -77,6 +79,16 @@
   <div id="balloon-0" class="ar-balloon">
     <h3>Jazida e Extração de Argila</h3>
     <p>Ponto de origem onde o barro é extraído da natureza nas margens de rios e encostas.</p>
+  </div>
+
+  <div id="balloon-1" class="ar-balloon">
+    <h3>Ateliê e Forno de Queima</h3>
+    <p>Aqui a argila é moldada no torno de oleiro, usado para moldar e esculpir vasos, pratos e xícaras, passa pela secagem lenta à sombra. Em seguida, as peças vão para o forno a lenha para endurecer e recebem acabamento com pintura ou pigmentos naturais.</p>
+  </div>
+
+  <div id="balloon-3" class="ar-balloon">
+    <h3>Comercialização na Feira</h3>
+    <p>Onde a cadeia de suprimentos se encerra, conectando o artesão diretamente ao público final, turistas e compradores locais em feiras populares e mercados de artesanato.</p>
   </div>
 
   <div id="app-container">
@@ -96,11 +108,11 @@
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-entity id="target-0" mindar-image-target="targetIndex: 0">
-        <a-gltf-model src="#model-jazida" position="0 0 0" scale="3 3 3" rotation="90 0 0"></a-gltf-model>
+        <a-gltf-model src="#model-jazida" position="0 0 0" scale="10 10 10" rotation="0 0 0"></a-gltf-model>
       </a-entity>
 
       <a-entity id="target-1" mindar-image-target="targetIndex: 1">
-        <a-gltf-model src="#model-producao" position="0 0 0" scale="3 3 3" rotation="90 0 0"></a-gltf-model>
+        <a-gltf-model src="#model-producao" position="0 0 0" scale="10 10 10" rotation="0 0 0"></a-gltf-model>
       </a-entity>
 
       <a-entity id="target-2" mindar-image-target="targetIndex: 2">
@@ -108,9 +120,9 @@
       </a-entity>
 
       <a-entity id="target-3" mindar-image-target="targetIndex: 3">
-        <a-gltf-model src="#model-feirapessoas" position="0 0 0" scale="3 3 3" rotation="90 0 0"></a-gltf-model>
+        <a-gltf-model src="#model-feirapessoas" position="0 0 0" scale="1 1 1" rotation="90 0 0"></a-gltf-model>
       </a-entity>
-      <a-entity light="type: ambient; color: #FFF; intensity: 1.2"></a-entity>
+
       <a-entity light="type: ambient; color: #FFF; intensity: 0.8"></a-entity>
       <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="1 2 1"></a-entity>
     </a-scene>
@@ -131,6 +143,16 @@
     const balloon0 = document.getElementById('balloon-0');
     target0.addEventListener('targetFound', () => { balloon0.style.display = 'block'; });
     target0.addEventListener('targetLost', () => { balloon0.style.display = 'none'; });
+
+    const target1 = document.getElementById('target-1');
+    const balloon1 = document.getElementById('balloon-1');
+    target1.addEventListener('targetFound', () => { balloon1.style.display = 'block'; });
+    target1.addEventListener('targetLost', () => { balloon1.style.display = 'none'; });
+
+    const target3 = document.getElementById('target-3');
+    const balloon3 = document.getElementById('balloon-3');
+    target3.addEventListener('targetFound', () => { balloon3.style.display = 'block'; });
+    target3.addEventListener('targetLost', () => { balloon3.style.display = 'none'; });
 
     // Log de carregamento dos modelos, para diagnosticar se os .glb estão sendo encontrados
     document.querySelectorAll('a-asset-item').forEach(item => {
