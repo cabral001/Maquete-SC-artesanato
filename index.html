@@ -1,228 +1,38 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Maquete Interativa - WebAR</title>
-
-  <script>
-    const originalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
-    navigator.mediaDevices.getUserMedia = function(constraints) {
-      if (constraints && constraints.video) {
-        if (typeof constraints.video === 'object') {
-          constraints.video.width = { ideal: 1280 };
-          constraints.video.height = { ideal: 720 };
-        } else {
-          constraints.video = { width: { ideal: 1280 }, height: { ideal: 720 } };
-        }
-      }
-      return originalGetUserMedia(constraints);
-    };
-  </script>
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Experiência WebAR</title>
   <style>
-    html, body {
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      overflow: hidden;
-      background: #000;
     }
-
-    #app-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: var(--app-height, 100vh);
-    }
-
-    a-scene {
+    body {
       width: 100%;
-      height: 100%;
+      min-height: 100vh;
+      background-color: #000000;
     }
-
-    #status-message {
-      position: fixed;
-      top: 1px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.75);
-      color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-family: sans-serif;
-      font-size: 14px;
-      z-index: 999;
-      max-width: 85%;
-      text-align: center;
-    }
-
-    .ar-balloon {
-      display: none;
-      position: fixed;
-      top: 8%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(255, 255, 255, 0.95);
-      color: #333;
-      padding: 12px 16px;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-      font-family: sans-serif;
-      width: 260px;
-      max-height: 60vh;
-      overflow-y: auto;
-      text-align: left;
-      border-left: 5px solid #2196F3;
-      z-index: 998;
-    }
-    .ar-balloon h3 { margin: 0 0 6px 0; font-size: 15px; color: #111; }
-    .ar-balloon p { margin: 0; font-size: 12px; line-height: 1.4; color: #555; }
   </style>
 </head>
 <body>
-
-  <div id="status-message">Verificando câmera...</div>
-
-  <div id="balloon-0" class="ar-balloon">
-    <h3>Jazida e Extração de Argila</h3>
-    <p>Ponto de origem onde o barro é extraído da natureza nas margens de rios e encostas, mantendo práticas de manejo herdadas de comunidades quilombolas e de africanos escravizados que dominavam a olaria tradicional.</p>
-  </div>
-
-  <div id="balloon-1" class="ar-balloon">
-    <h3>Ateliê e Forno de Queima</h3>
-    <p>Aqui a argila é moldada no torno de oleiro, usado para moldar e esculpir vasos, pratos e xícaras, passa pela secagem lenta à sombra. Em seguida, as peças vão para o forno a lenha para endurecer e recebem acabamento com pintura ou pigmentos naturais.</p>
-  </div>
-
-  <div id="balloon-2" class="ar-balloon">
-    <h3>Distribuição e Transporte</h3>
-    <p>Conecta a produção do interior aos grandes centros. Programa do Artesanato de Pernambuco fornece transporte gratuito para escoar o trabalho de artesãos negros e de comunidades tradicionais, garantindo a presença deles em grandes feiras</p>
-  </div>
-
-  <div id="balloon-3" class="ar-balloon">
-    <h3>Comercialização na Feira</h3>
-    <p>OOcorre nas feiras populares e mercados, onde o público final compra a cerâmica diretamente de quem produz. Espaço onde o patrimônio afro-pernambucano é comercializado e gerando renda para os criadores.</p>
-  </div>
-
-  <div id="app-container">
-    <a-scene
-      mindar-image="imageTargetSrc: targets.mind; maxTrack: 4; filterMinCF: 0.001; filterBeta: 0.001;"
-      embedded
-      renderer="colorManagement: true; physicallyCorrectLights: true; antialias: true;"
-      vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: false">
-
-      <a-assets>
-        <a-asset-item id="model-jazida" src="jazida.glb"></a-asset-item>
-        <a-asset-item id="model-producao" src="producao.glb"></a-asset-item>
-        <a-asset-item id="model-logis" src="logis.glb"></a-asset-item>
-        <a-asset-item id="model-feirapessoas" src="feirapessoas.glb"></a-asset-item>
-      </a-assets>
-
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-
-      <a-entity id="target-0" mindar-image-target="targetIndex: 0">
-        <a-gltf-model src="#model-jazida" position="0 0 0" scale="2 2 2" rotation="90 0 0"></a-gltf-model>
-      </a-entity>
-
-      <a-entity id="target-1" mindar-image-target="targetIndex: 1">
-        <a-gltf-model src="#model-producao" position="0 0 0" scale="2.5 2.5 2.5" rotation="90 0 0"></a-gltf-model>
-      </a-entity>
-
-      <a-entity id="target-2" mindar-image-target="targetIndex: 2">
-        <a-gltf-model src="#model-logis" position="0 0.5 0" scale="0.2 0.2 0.2" rotation="90 0 0"></a-gltf-model>
-      </a-entity>
-
-      <a-entity id="target-3" mindar-image-target="targetIndex: 3">
-        <a-gltf-model src="#model-feirapessoas" position="0 0 0" scale="2.5 2.5 2.5" rotation="90 0 0"></a-gltf-model>
-      </a-entity>
-
-    </a-scene>
-  </div>
-
-  <script>
-    function setAppHeight() {
-      document.documentElement.style.setProperty('--app-height', window.innerHeight + 'px');
-    }
-    window.addEventListener('resize', setAppHeight);
-    window.addEventListener('orientationchange', setAppHeight);
-    setAppHeight();
-
-    const statusEl = document.getElementById('status-message');
-
-    const target0 = document.getElementById('target-0');
-    const balloon0 = document.getElementById('balloon-0');
-    target0.addEventListener('targetFound', () => { balloon0.style.display = 'block'; });
-    target0.addEventListener('targetLost', () => { balloon0.style.display = 'none'; });
-
-    const target1 = document.getElementById('target-1');
-    const balloon1 = document.getElementById('balloon-1');
-    target1.addEventListener('targetFound', () => { balloon1.style.display = 'block'; });
-    target1.addEventListener('targetLost', () => { balloon1.style.display = 'none'; });
-
-    const target2 = document.getElementById('target-2');
-    const balloon2 = document.getElementById('balloon-2');
-    target2.addEventListener('targetFound', () => { balloon2.style.display = 'block'; });
-    target2.addEventListener('targetLost', () => { balloon2.style.display = 'none'; });
-
-    const target3 = document.getElementById('target-3');
-    const balloon3 = document.getElementById('balloon-3');
-    target3.addEventListener('targetFound', () => { balloon3.style.display = 'block'; });
-    target3.addEventListener('targetLost', () => { balloon3.style.display = 'none'; });
-
-    document.querySelectorAll('a-asset-item').forEach(item => {
-      item.addEventListener('loaded', () => console.log('Carregado:', item.id));
-      item.addEventListener('error', (e) => console.error('Erro ao carregar:', item.id, e));
-    });
-
-    async function checkCamera() {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        statusEl.textContent = 'Este navegador não suporta câmera (ou a página não está em HTTPS).';
-        return;
-      }
-
-      const videoConstraints720p = { width: { ideal: 1280 }, height: { ideal: 720 } };
-
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const hasCamera = devices.some(d => d.kind === 'videoinput');
-
-        if (!hasCamera) {
-          statusEl.textContent = 'Nenhuma câmera encontrada neste dispositivo. Abra esta página no celular.';
-          return;
-        }
-
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: { ideal: 'environment' }, ...videoConstraints720p }
-          });
-          stream.getTracks().forEach(t => t.stop());
-          statusEl.textContent = 'Aponte a câmera para as imagens de referência...';
-        } catch (e1) {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: videoConstraints720p
-          });
-          stream.getTracks().forEach(t => t.stop());
-          statusEl.textContent = 'Aponte a câmera para as imagens de referência...';
-        }
-
-      } catch (err) {
-        if (err.name === 'NotAllowedError') {
-          statusEl.textContent = 'Permissão de câmera negada. Libere o acesso no ícone de cadeado do navegador.';
-        } else if (err.name === 'NotFoundError') {
-          statusEl.textContent = 'Nenhuma câmera encontrada. Abra esta página no celular.';
-        } else if (err.name === 'NotReadableError') {
-          statusEl.textContent = 'A câmera está sendo usada por outro aplicativo.';
-        } else {
-          statusEl.textContent = 'Erro ao acessar a câmera: ' + err.message;
-        }
-      }
-    }
-
-    checkCamera();
-  </script>
-
+  <iframe
+    src="https://mywebar.com/b/logbarro-ar"
+    frameborder="0"
+    scrolling="yes"
+    seamless="seamless"
+    style="display:block; width:100%; height:100vh;"
+    allow="camera;gyroscope;accelerometer;magnetometer;xr-spatial-tracking;microphone;"
+  ></iframe>
 </body>
 </html>
+```[cite: 1]
+
+4. Clique em **Commit changes...** para salvar.
+5. Vá em **Settings** > **Pages** do repositório e confirme que o **Branch** está publicado (geralmente `main` na pasta `/ (root)`). Após alguns minutos, seu link `[https://seu-usuario.github.io/nome-do-repo/](https://seu-usuario.github.io/nome-do-repo/)` ficará no ar.
+
+*(Dica: se você já tem um `index.html` no site e quer colocar o WebAR em outra página, crie por exemplo `webar.html` e acesse via `.../webar.html`.)*
+
+O seu repositório já está com o GitHub Pages ativado, ou você vai configurar ele agora?
